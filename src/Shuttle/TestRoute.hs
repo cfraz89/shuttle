@@ -19,8 +19,7 @@ import Shuttle.Core2
 data Routes = TestRoute
 
 instance ShuttleRoute 'TestRoute where 
-  type Route 'TestRoute = GET "test/#{p1:Int}/#{p2:String}/test"
-  type ResponseType 'TestRoute = Int
+  type Route 'TestRoute = GET "test/#{p1:Int}/#{p2:String}/test" Int
 
 test :: IO ()
 test = do

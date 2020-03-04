@@ -32,19 +32,24 @@ import Shuttle.PathParam
 type Response a = IO a
 
 data MethodRoute where
-  GET :: Symbol -> MethodRoute 
-  POST :: Symbol -> MethodRoute
+  GET :: Symbol -> a -> MethodRoute 
+  POST :: Symbol -> a -> MethodRoute
 
 type family PathFor (r :: MethodRoute) where
-  PathFor (GET s) = s
-  PathFor (POST s) = s
+  PathFor (GET s _) = s
+  PathFor (POST s _) = s
+
+type family ResponseFor (r :: MethodRoute) where
+  ResponseFor (GET _ a) = a
+  ResponseFor (POST _ a) = a
+
+type ResponseType r = ResponseFor (Route r)
 
 data Param (name :: Symbol) (a :: Type)
 data Static (name :: Symbol)
 
 class ShuttleRoute (r :: k) where
   type Route r :: MethodRoute
-  type ResponseType r :: Type
 
 -- class (ShuttleRoute r, route ~ Route r, Listify route lst, tokens ~ ParseRoute lst, handler ~ HandlerType tokens a)  => HandlePath r a where
 class HandlePath tokens a where
