@@ -2,14 +2,30 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Shuttle.TestRoute where
 
-import Shuttle.Core
+import Data.Symbol.Utils
+import Shuttle.Core2
 
-type TestRoute = "test" :/ Param "p1" Int :/ Param "p2" String :/ "test" :-> Int
+-- type Test = Route GET ("test" :/ Param "p1" Int :/ Param "p2" String :/ "test") Int
 
-instance Handle TestRoute where
-  handle a b = do
-    print $ show a ++ ", " ++ b
-    pure 0
+data Routes = TestRoute
+
+instance ShuttleRoute 'TestRoute where 
+  type Route 'TestRoute = GET "test/#{p1:Int}/#{p2:String}/test"
+  type ResponseType 'TestRoute = Int
+
+test :: IO ()
+test = do
+  process @'TestRoute "test.com/test/1/2/test" 
+    $ \a b -> do
+      print $ show a
+      pure 0
+  pure ()
